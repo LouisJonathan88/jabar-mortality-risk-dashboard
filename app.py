@@ -85,7 +85,7 @@ risk, detail = load_data()
 # Header + Filter Tahun + Jenis Kematian
 # =============================
 st.markdown(
-    "<h1 style='text-align:center; margin-top: 10px;'>Peta Penyebaran Penyebab Kematian dan Rekomendasi Penanganan Berbasis AI</h1>",
+    "<h1 style='text-align:center; margin-top: 10px;'>Peta Penyebaran Penyebab Kematian di Jawa Barat dan Rekomendasi Penanganan Berbasis AI</h1>",
     unsafe_allow_html=True
 )
 st.divider()
