@@ -72,9 +72,9 @@ Data telah melalui proses **pembersihan, agregasi, dan pengelompokan risiko** se
 
 1. Clone repository:
    ```bash
-   git clone https://github.com/LouisJonathan88/kmeans-mortality-clustering-recommendation.git
+   git clone https://github.com/LouisJonathan88/jabar-mortality-risk-dashboard.git
 
-   cd kmeans-mortality-clustering-recommendation
+   cd jabar-mortality-risk-dashboard
     ```
 2. Install dependencies:
    ```bash
