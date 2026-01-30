@@ -168,15 +168,37 @@ for ft in geo_enriched.get("features", []):
 # =============================
 m = folium.Map(location=[-6.90, 107.60], zoom_start=8, tiles="cartodbpositron")
 
-palette = ["#2ecc71", "#a3e635", "#facc15", "#fb923c", "#ef4444"]
+# palette = ["#2ecc71", "#a3e635", "#facc15", "#fb923c", "#ef4444"]
 
+# def style_fn(feature):
+#     c = feature["properties"].get("cluster", None)
+#     if c is None:
+#         return {"fillOpacity": 0.15, "weight": 0.8, "color": "#777", "fillColor": "#cccccc"}
+#     c = int(c)
+#     idx = min(c, len(palette) - 1)
+#     return {"fillOpacity": 0.7, "weight": 1.0, "color": "white", "fillColor": palette[idx]}
+
+# Mapping warna berdasarkan risk_label
+RISK_COLOR = {
+    "SANGAT TINGGI": "#ef4444",   # merah
+    "TINGGI": "#facc15",          # kuning
+    "SEDANG": "#fb923c",          # oranye (opsional)
+    "RENDAH": "#a3e635",           # hijau muda
+    "SANGAT RENDAH": "#2ecc71"     # hijau
+}
 def style_fn(feature):
-    c = feature["properties"].get("cluster", None)
-    if c is None:
-        return {"fillOpacity": 0.15, "weight": 0.8, "color": "#777", "fillColor": "#cccccc"}
-    c = int(c)
-    idx = min(c, len(palette) - 1)
-    return {"fillOpacity": 0.7, "weight": 1.0, "color": "white", "fillColor": palette[idx]}
+    label = feature["properties"].get("risk_label", "").upper()
+
+    fill_color = RISK_COLOR.get(label, "#cccccc")  # default abu-abu
+
+    return {
+        "fillOpacity": 0.7 if label else 0.15,
+        "weight": 1.0,
+        "color": "white",
+        "fillColor": fill_color
+    }
+
+
 
 tooltip = folium.GeoJsonTooltip(
     fields=["nama_kabkota_geo", "risk_label", "total_kematian"],
