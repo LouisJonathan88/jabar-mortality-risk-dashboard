@@ -7,6 +7,33 @@ import os
 from dotenv import load_dotenv
 from google import genai
 
+# =============================
+# Legend Warna Risiko
+# =============================
+legend_html = """
+<div style="
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    z-index: 9999;
+    background-color: white;
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    box-shadow: 0 0 12px rgba(0,0,0,0.25);
+">
+<b>Legenda Risiko</b><br><br>
+
+<div><span style="background:#ef4444;width:14px;height:14px;display:inline-block;margin-right:8px;"></span>Sangat Tinggi</div>
+<div><span style="background:#fb923c;width:14px;height:14px;display:inline-block;margin-right:8px;"></span>Tinggi</div>
+<div><span style="background:#facc15;width:14px;height:14px;display:inline-block;margin-right:8px;"></span>Sedang</div>
+<div><span style="background:#a3e635;width:14px;height:14px;display:inline-block;margin-right:8px;"></span>Rendah</div>
+<div><span style="background:#2ecc71;width:14px;height:14px;display:inline-block;margin-right:8px;"></span>Sangat Rendah</div>
+
+</div>
+"""
+
+
 st.set_page_config(layout="wide")
 
 # =============================
@@ -168,21 +195,12 @@ for ft in geo_enriched.get("features", []):
 # =============================
 m = folium.Map(location=[-6.90, 107.60], zoom_start=8, tiles="cartodbpositron")
 
-# palette = ["#2ecc71", "#a3e635", "#facc15", "#fb923c", "#ef4444"]
-
-# def style_fn(feature):
-#     c = feature["properties"].get("cluster", None)
-#     if c is None:
-#         return {"fillOpacity": 0.15, "weight": 0.8, "color": "#777", "fillColor": "#cccccc"}
-#     c = int(c)
-#     idx = min(c, len(palette) - 1)
-#     return {"fillOpacity": 0.7, "weight": 1.0, "color": "white", "fillColor": palette[idx]}
 
 # Mapping warna berdasarkan risk_label
 RISK_COLOR = {
     "SANGAT TINGGI": "#ef4444",   # merah
-    "TINGGI": "#facc15",          # kuning
-    "SEDANG": "#fb923c",          # oranye (opsional)
+    "TINGGI": "#fb923c",          # oranye
+    "SEDANG": "#facc15",          # kuning
     "RENDAH": "#a3e635",           # hijau muda
     "SANGAT RENDAH": "#2ecc71"     # hijau
 }
@@ -206,6 +224,15 @@ tooltip = folium.GeoJsonTooltip(
     localize=True
 )
 
+# =============================
+# Buat peta
+# =============================
+m = folium.Map(
+    location=[-6.90, 107.60],
+    zoom_start=8,
+    tiles="cartodbpositron"
+)
+
 folium.GeoJson(
     geo_enriched,
     name="Risiko Wilayah",
@@ -216,13 +243,22 @@ folium.GeoJson(
 
 folium.LayerControl().add_to(m)
 
+# ✅ TAMBAHKAN LEGEND DI SINI (SATU KALI SAJA)
+m.get_root().html.add_child(folium.Element(legend_html))
+
 out = st_folium(
     m,
     height=420,
     use_container_width=True,
     key="map",
-    returned_objects=["last_object_clicked_tooltip", "last_object_clicked_popup", "last_active_drawing"],
+    returned_objects=[
+        "last_object_clicked_tooltip",
+        "last_object_clicked_popup",
+        "last_active_drawing",
+    ],
 )
+
+
 
 clicked_name = pick_clicked_name(out)  # ini sudah versi display: "KABUPATEN BANDUNG" / "KOTA BANDUNG"
 
