@@ -11,17 +11,31 @@ from google import genai
 # Legend Warna Risiko
 # =============================
 legend_html = """
-<div style="
+<style>
+/* Default (Light Mode) */
+.legend-box {
     position: fixed;
     bottom: 30px;
     left: 30px;
     z-index: 9999;
     background-color: white;
+    color: #111111;
     padding: 12px 14px;
     border-radius: 8px;
     font-size: 13px;
     box-shadow: 0 0 12px rgba(0,0,0,0.25);
-">
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+    .legend-box {
+        background-color: #1f2937; /* abu gelap */
+        color: #ffffff;           /* teks putih */
+    }
+}
+</style>
+
+<div class="legend-box">
 <b>Legenda Risiko</b><br><br>
 
 <div><span style="background:#ef4444;width:14px;height:14px;display:inline-block;margin-right:8px;"></span>Sangat Tinggi</div>
@@ -29,9 +43,9 @@ legend_html = """
 <div><span style="background:#facc15;width:14px;height:14px;display:inline-block;margin-right:8px;"></span>Sedang</div>
 <div><span style="background:#a3e635;width:14px;height:14px;display:inline-block;margin-right:8px;"></span>Rendah</div>
 <div><span style="background:#2ecc71;width:14px;height:14px;display:inline-block;margin-right:8px;"></span>Sangat Rendah</div>
-
 </div>
 """
+
 
 
 st.set_page_config(layout="wide")
@@ -383,8 +397,61 @@ if not d.empty:
 
     # 2. Tampilkan hasil jika status sudah True
     if st.session_state.rekomendasi_tampil:
-        st.markdown(st.session_state.hasil_gemini)
-        
+        st.markdown("""
+<style>
+.gemini-output {
+    font-size: 20px;       /* ukuran utama */
+    line-height: 1.7;      /* jarak baris biar enak dibaca */
+}
+
+/* Perbesar judul */
+.gemini-output h1 {
+    font-size: 26px;
+}
+.gemini-output h2 {
+    font-size: 22px;
+}
+.gemini-output h3 {
+    font-size: 20px;
+}
+
+/* Dark mode aman */
+@media (prefers-color-scheme: dark) {
+    .gemini-output {
+        color: #ffffff;
+    }
+}
+</style>
+""", unsafe_allow_html=True)
+
+
+        # st.markdown(st.session_state.hasil_gemini)
+        # hasil_bersih = (
+        #     st.session_state.hasil_gemini
+        #     .replace("## ", "")
+        # )
+
+        import re
+
+        hasil_html = st.session_state.hasil_gemini
+
+# Ubah "## Judul" jadi <h2>Judul</h2>
+        hasil_html = re.sub(
+            r"^##\s*(.+)$",
+            r"<h2>\1</h2>",
+            hasil_html,
+            flags=re.MULTILINE
+        )
+
+        # st.markdown(
+        #     f"<div class='gemini-output'>{st.session_state.hasil_gemini}</div>",
+        #     unsafe_allow_html=True
+        # )
+        st.markdown(
+            f"<div class='gemini-output'>{hasil_html}</div>",
+            unsafe_allow_html=True
+        )
+
         st.divider()
         st.warning("⚠️ **Disclaimer:** Informasi ini dihasilkan oleh AI (Gemini) dan bukan merupakan pengganti saran medis profesional, diagnosis, atau kebijakan resmi pemerintah.")
 
